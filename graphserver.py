@@ -1,38 +1,28 @@
 import sqlite3
 import time
-from flask import Flask, request, session, g, redirect, url_for
+from flask import Flask, request, session, redirect, url_for, jsonify
 from flask import abort, render_template, flash
 from contextlib import closing
 from sqlalchemy import create_engine, MetaData, Table
 
-DATABASE = 'mysql://root:password@localhost/graphserver_staging'
-DEBUG = True
-SECRET_KEY = 'developmentkey'
-USERNAME = 'admin'
-PASSWORD = 'default'
-
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object('config.DevelopmentConfig')
 
-engine = create_engine(DATABASE, convert_unicode=True)
+engine = create_engine(app.config['DATABASE_URI'], convert_unicode=True)
 metadata = MetaData(bind=engine)
 
 branches = Table('branches', metadata, autoload=True)
 
 @app.before_request
 def before_request():
-    #g.db = connect_db()
-    pass
+    session['version'] = app.config['VERSION']
 
 @app.teardown_request
 def teardown_request(exception):
-    #g.db.close()
     pass
 
 @app.route('/')
 def show_entries():
-    # show branches & machines - with a button to go to add a machine or add an entry?
-    # or just an entry field for each (above list) on the page that calls the respective routes?
     branches = engine.execute('select * from branches')
     machines = engine.execute('select * from machines')
     return render_template('show_entries.html', branches=branches, machines=machines)
@@ -52,6 +42,7 @@ def add_branch():
 def add_machine():
     if not session.get('logged_in'):
         abort(401)
+    # TODO - form validation
     con = engine.connect()
     con.execute('insert into machines (id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
                 values (NULL, %s, 0, NULL, %s, 1, %s)', [request.form['os_id'], request.form['machine_name'] ,int(time.time())])
@@ -63,6 +54,8 @@ def add_machine():
 def delete_machine():
     if not session.get('logged_in'):
         abort(401)
+    # confirm delete
+    # check id is valid, if not catch/flash error
     con = engine.connect()
     con.execute('delete from machines where id=%d' % int(request.form['id']))
     flash('Machine %d was successfully deleted' % int(request.form['id']))
