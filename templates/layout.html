@@ -1,6 +1,13 @@
 <!doctype html>
 <title>Graphserver {{ session.version }}</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<script>
+function confirmDelete(delUrl) {
+  if (confirm("Are you sure you want to delete")) {
+    document.location = delUrl;
+  }
+}
+</script>
 <div class=page>
   <h1>Graphserver {{ session.version }}</h1>
   <div class=metanav>

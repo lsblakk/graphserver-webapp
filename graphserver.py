@@ -50,16 +50,23 @@ def add_machine():
     # return json here?
     return redirect(url_for('show_entries'))
 
-@app.route('/delete_machine', methods=['POST'])
+@app.route('/delete_machine', methods=['GET', 'POST', 'DELETE'])
 def delete_machine():
     if not session.get('logged_in'):
         abort(401)
     # confirm delete
     # check id is valid, if not catch/flash error
-    con = engine.connect()
-    con.execute('delete from machines where id=%d' % int(request.form['id']))
-    flash('Machine %d was successfully deleted' % int(request.form['id']))
+    if request.method == 'POST':
+        con = engine.connect()
+        con.execute('delete from machines where id=%d' % int(request.form['id']))
+        flash('Machine %d was successfully deleted' % int(request.form['id']))
+    if request.method == 'DELETE':
+        print request
+        print dir(request)
     # return json here?
+    if request.method == 'GET':
+        print request
+        print dir(request)
     return redirect(url_for('show_entries'))
 
 @app.route('/delete_branch', methods=['POST'])
