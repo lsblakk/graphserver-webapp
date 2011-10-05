@@ -25,7 +25,7 @@
   {% for branch in branches %}
     <tr>
         <td colspan=3><form action="{{ url_for('branches') }}" method=post>
-                        <input type="submit" value="delete"/>
+                        <input type="submit" value="delete" onClick=javascript:confirmDelete("{{ branch.name }}") />
                         <input type="hidden" name="id"  value={{ branch.id }} />
                         <input type="hidden" name="branch_name" value={{ branch.name }} />
                         <input type="hidden" name="_method" value="delete">
@@ -53,7 +53,7 @@
                 <input type="hidden" name="_method" value="delete">
                 <input type="hidden" value={{ machine.name }} name="machine_name" />
                 <input type="hidden" value={{ machine.id }} name="id" />
-                <input type="submit" value="delete"/>
+                <input type="submit" value="delete" onClick=javascript:confirmDelete("{{ machine.name }}") />
             </form>
         </td>
         <td>{{ machine.os_id }}</td>
