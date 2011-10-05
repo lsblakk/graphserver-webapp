@@ -27,55 +27,36 @@ def show_entries():
     machines = engine.execute('select * from machines')
     return render_template('show_entries.html', branches=branches, machines=machines)
 
-@app.route('/add_branch', methods=['POST'])
-def add_branch():
+@app.route('/branches', methods=['GET', 'POST'])
+def branches():
     if not session.get('logged_in'):
         abort(401)
     # TODO - form validation here
     con = engine.connect()
-    con.execute('insert into branches (id, name) values (NULL, %s)', request.form['branch_name'])
-    flash('New branch %s was successfully inserted' % request.form['branch_name'])
+    if request.method == 'POST':
+        if request.form['_method'] == "delete":
+            con.execute('delete from branches where id=%d' % int(request.form['id']))
+            flash('Branch %s was successfully deleted' % request.form['branch_name'])
+        else:
+            con.execute('insert into branches (id, name) values (NULL, %s)', request.form['branch_name'])
+            flash('New branch %s was successfully added' % request.form['branch_name'])
     # return json here?
     return redirect(url_for('show_entries'))
 
-@app.route('/add_machine', methods=['POST'])
-def add_machine():
+@app.route('/machines', methods=['GET', 'POST'])
+def machines():
     if not session.get('logged_in'):
         abort(401)
     # TODO - form validation
     con = engine.connect()
-    con.execute('insert into machines (id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
-                values (NULL, %s, 0, NULL, %s, 1, %s)', [request.form['os_id'], request.form['machine_name'] ,int(time.time())])
-    flash('New machine was successfully posted')
-    # return json here?
-    return redirect(url_for('show_entries'))
-
-@app.route('/delete_machine', methods=['GET', 'POST', 'DELETE'])
-def delete_machine():
-    if not session.get('logged_in'):
-        abort(401)
-    # confirm delete
-    # check id is valid, if not catch/flash error
     if request.method == 'POST':
-        con = engine.connect()
-        con.execute('delete from machines where id=%d' % int(request.form['id']))
-        flash('Machine %d was successfully deleted' % int(request.form['id']))
-    if request.method == 'DELETE':
-        print request
-        print dir(request)
-    # return json here?
-    if request.method == 'GET':
-        print request
-        print dir(request)
-    return redirect(url_for('show_entries'))
-
-@app.route('/delete_branch', methods=['POST'])
-def delete_branch():
-    if not session.get('logged_in'):
-        abort(401)
-    con = engine.connect()
-    con.execute('delete from branches where id=%d' % int(request.form['id']))
-    flash('Branch %s was successfully deleted' % request.form['branch_name'])
+        if request.form['_method'] == "delete":
+            con.execute('delete from machines where id=%d' % int(request.form['id']))
+            flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
+        else:
+            con.execute('insert into machines (id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
+                        values (NULL, %s, 0, NULL, %s, 1, %s)', [request.form['os_id'], request.form['machine_name'] ,int(time.time())])
+            flash('New machine was successfully added')
     # return json here?
     return redirect(url_for('show_entries'))
 

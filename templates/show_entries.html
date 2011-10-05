@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_branch') }}" method=post class=add-branch>
+    <form action="{{ url_for('branches') }}" method=post class=add-branch>
       <dl>
         <dt>Branch Name:
         <dd><input type=text size=30 name=branch_name>
@@ -10,7 +10,7 @@
     </form>
   {% endif %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_machine') }}" method=post class=add-machine>
+    <form action="{{ url_for('machines') }}" method=post class=add-machine>
       <dl>
         <dt>Machine Name:
         <dd><input type=text size=30 name=machine_name>
@@ -24,14 +24,16 @@
   <th colspan=7>Branches</th>
   {% for branch in branches %}
     <tr>
-        <td colspan=3><form action="{{ url_for('delete_branch') }}" method=post>
-                        <input type="submit" value={{ branch.id }} name="id" />
-                        <input type="hidden" name="branch_name" value="{{ branch.name }}">
+        <td colspan=3><form action="{{ url_for('branches') }}" method=post>
+                        <input type="submit" value="delete"/>
+                        <input type="hidden" name="id"  value={{ branch.id }} />
+                        <input type="hidden" name="branch_name" value={{ branch.name }} />
+                        <input type="hidden" name="_method" value="delete">
                       </form></td>
         <td colspan=4>{{ branch.name }}</td>
     </tr>
   {% else %}
-    <tr><td><em>Unbelievable.  No branches here so far</em></td></tr>
+    <tr colspan=7><td><em>No branches here so far</em></td></tr>
   {% endfor %}
   <th colspan=7>Machines</th>
   <tr>
@@ -46,10 +48,14 @@
   </tr>
   {% for machine in machines %}
     <tr>
-        <!-- Works with POST -->
-        <td><form action="{{ url_for('delete_machine') }}" method=post><input type="submit" value={{ machine.id }} name="id" /></form></td>
-        <!-- Doesn't work with DELETE, sends as GET -->
-        <td><a href="javascript:confirmDelete('{{ url_for('delete_machine') }}?id={{ machine.id }}')" method=delete>Delete</a></td>
+        <td>
+            <form action="{{ url_for('machines') }}" method=post>
+                <input type="hidden" name="_method" value="delete">
+                <input type="hidden" value={{ machine.name }} name="machine_name" />
+                <input type="hidden" value={{ machine.id }} name="id" />
+                <input type="submit" value="delete"/>
+            </form>
+        </td>
         <td>{{ machine.os_id }}</td>
         <td>{{ machine.is_throttling }}</td>
         <td>{{ machine.cpu_speed }}</td>
@@ -58,7 +64,7 @@
         <td>{{ machine.date_added }}</td>
     </tr>
   {% else %}
-    <tr><td><em>Unbelievable.  No machines here so far</td></tr>
+    <tr colspan=7><td><em>No machines here so far</td></tr>
   {% endfor %}
   </table>
 {% endblock %}
