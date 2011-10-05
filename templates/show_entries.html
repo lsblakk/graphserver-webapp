@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_branch') }}" method=post class=add-branch>
+      <dl>
+        <dt>Branch Name:
+        <dd><input type=text size=30 name=branch_name>
+        <dd><input type=submit value="Submit">
+      </dl>
+    </form>
+  {% endif %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_machine') }}" method=post class=add-machine>
+      <dl>
+        <dt>Machine Name:
+        <dd><input type=text size=30 name=machine_name>
+        <dt>OS_ID:
+        <dd><input type=text size=10 name=os_id>
+        <dd><input type=submit value="Submit">
+      </dl>
+    </form>
+  {% endif %}
+  <table>
+  <th colspan=7>Branches</th>
+  {% for branch in branches %}
+    <tr>
+        <td colspan=3><form action="{{ url_for('delete_branch') }}" method=post>
+                        <input type="submit" value={{ branch.id }} name="id" />
+                        <input type="hidden" name="branch_name" value="{{ branch.name }}">
+                      </form></td>
+        <td colspan=4>{{ branch.name }}</td>
+    </tr>
+  {% else %}
+    <tr><td><em>Unbelievable.  No branches here so far</em></td></tr>
+  {% endfor %}
+  <th colspan=7>Machines</th>
+  <tr>
+    <th>ID</th>
+    <th>OS_ID</th>
+    <th>IS_THROTTLING</th>
+    <th>CPU_SPEED</th>
+    <th>NAME</th>
+    <th>IS_ACTIVE</th>
+    <th>DATE_ADDED</th>
+  </tr>
+  {% for machine in machines %}
+    <tr>
+        <td><form action="{{ url_for('delete_machine') }}" method=post><input type="submit" value={{ machine.id }} name="id" /></form></td>
+        <td>{{ machine.os_id }}</td>
+        <td>{{ machine.is_throttling }}</td>
+        <td>{{ machine.cpu_speed }}</td>
+        <td>{{ machine.name }}</td>
+        <td>{{ machine.is_active }}</td>
+        <td>{{ machine.date_added }}</td>
+    </tr>
+  {% else %}
+    <tr><td><em>Unbelievable.  No machines here so far</td></tr>
+  {% endfor %}
+  </table>
+{% endblock %}
