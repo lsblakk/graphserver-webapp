@@ -37,6 +37,7 @@ def branches():
         if request.form['_method'] == "delete":
             con.execute('delete from branches where id=%d' % int(request.form['id']))
             flash('Branch %s was successfully deleted' % request.form['branch_name'])
+            return redirect(url_for('show_entries'))
         else:
             con.execute('insert into branches (id, name) values (NULL, %s)', request.form['branch_name'])
             flash('New branch %s was successfully added' % request.form['branch_name'])
