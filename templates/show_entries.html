@@ -11,9 +11,15 @@
     <form action="{{ url_for('machines') }}" method=post class=add-machine>
       <dl>
         <dt>Machine Name:
-        <dd><input type=text size=30 name=machine_name>
+        <dd><input type=text size=10 name=machine_name>
         <dt>OS_ID:
-        <dd><input type=text size=10 name=os_id>
+        <dd><input type=text size=2 name=os_id>
+        <dt>is_throttling:
+        <dd><input type=text size=1 name=is_throttling value=0>
+        <dt>cpu_speed:
+        <dd><input type=text size=4 name=cpu_speed>
+        <dt>is_active:
+        <dd><input type=text size=2 name=is_active value=1>
         <input type="hidden" name="_method" value="">
         <dd><input type=submit value="Submit">
       </dl>
@@ -36,7 +42,6 @@
   <th colspan=7>Machines</th>
   <tr>
     <th>ID</th>
-    <th>DELETE METHOD</th>
     <th>OS_ID</th>
     <th>IS_THROTTLING</th>
     <th>CPU_SPEED</th>

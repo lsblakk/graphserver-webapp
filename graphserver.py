@@ -52,7 +52,8 @@ def machines():
             flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
         else:
             con.execute('insert into machines (id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
-                        values (NULL, %s, 0, NULL, %s, 1, %s)', [request.form['os_id'], request.form['machine_name'] ,int(time.time())])
+                        values (NULL, %s, %s, %s, %s, %s, %s)', [request.form['os_id'], request.form['is_throttling'],
+                        request.form['cpu_speed'], request.form['machine_name'], request.form['is_active'], int(time.time())])
             flash('New machine was successfully added')
     # return json here?
     return redirect(url_for('show_entries'))
