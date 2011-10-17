@@ -1,8 +1,14 @@
 class Config(object):
     DEBUG = False
     TESTING = False
-    DATABASE_URI = 'sqlite://:memory:'
-    VERSION = ''
+    DATABASE_URI = 'sqlite:///:memory:'
+    VERSION = 'Default'
+
+class TestConfig(object):
+    DEBUG = True
+    TESTING = True
+    DATABASE_URI = 'sqlite:///test_graphserver.sqlite'
+    VERSION = 'Test'
 
 class ProductionConfig(Config):
     DATABASE_URI = 'mysql://user@localhost/foo'
