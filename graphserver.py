@@ -31,20 +31,16 @@ def show_entries():
 @app.route('/branches', methods=['GET', 'POST'])
 def branches():
     # TODO - form validation
-    print request.form
     if request.method == 'POST':
-        print request.form
         if request.form['_method'] == "delete":
-            print 'delete'
-            results = app.con.execute('delete from branches where id=%d' % int(request.form['id']))
+            stmt = "delete from branches where id = %d" % int(request.form['id'])
+            results = app.con.execute(stmt)
             flash('Branch %s was successfully deleted' % request.form['branch_name'])
         elif request.form['_method'] == "insert":
-            print 'insert'
-            results = app.con.execute('insert into branches(id, name) values (NULL, %s)', request.form['branch_name'])
+            stmt = "insert into branches(id, name) values (NULL, '%s')" % request.form['branch_name']
+            results = app.con.execute(stmt)
             flash('New branch %s was successfully added' % request.form['branch_name'])
-    if 'application/json' in request.headers.get('Accept', ''):
-        return jsonify(results)
-    if request.form.get('format') == 'json':
+    if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)
     return redirect(url_for('show_entries'))
 
@@ -53,16 +49,16 @@ def machines():
     # TODO - form validation
     if request.method == 'POST':
         if request.form['_method'] == "delete":
-            results = app.con.execute('delete from machines where id=%d' % int(request.form['id']))
+            stmt = "delete from machines where id = %d" % int(request.form['id'])
+            results = app.con.execute(stmt)
             flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
         elif request.form['_method'] == "insert":
-            results = app.con.execute('insert into machines(id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
-                        values (NULL, %s, %s, %s, %s, %s, %s)', [request.form['os_id'], request.form['is_throttling'],
-                        request.form['cpu_speed'], request.form['machine_name'], request.form['is_active'], int(time.time())])
-            flash('New machine was successfully added')
-    if 'application/json' in request.headers.get('Accept', ''):
-        return jsonify(results)
-    if request.form.get('format') == 'json':
+            stmt = "insert into machines(id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
+                        values (NULL, %d, %d, %s, '%s', %d, %d)" % (int(request.form['os_id']), int(request.form['is_throttling']),
+                        request.form['cpu_speed'], request.form['machine_name'], int(request.form['is_active']), int(time.time()))
+            results = app.con.execute(stmt)
+            flash('New machine %s was successfully added' % request.form['machine_name'])
+    if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)
     return redirect(url_for('show_entries'))
 
