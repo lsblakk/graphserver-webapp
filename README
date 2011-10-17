@@ -2,7 +2,6 @@ For bug https://bugzilla.mozilla.org/show_bug.cgi?id=505803
 
 TODO:
 * input validation for branch names, machine names, OS_ID 
-* confirm deletion
-* output json results
-* generate diff of data.sql
-* configuration files & setting up a staging/production instance accordingly
+* output json results (started, need testing)
+* generate diff of data.sql?
+* script for adding a new branch/machine through API calls
