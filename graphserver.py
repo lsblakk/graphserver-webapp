@@ -12,6 +12,8 @@ def init_db():
     app.engine = create_engine(app.config['DATABASE_URI'], convert_unicode=True)
     app.metadata = MetaData(bind=app.engine)
     app.con = app.engine.connect()
+    app.branches = Table('branches', app.metadata, autoload=True)
+    app.machines = Table('machines', app.metadata, autoload=True)
     
 @app.before_request
 def before_request():
@@ -24,21 +26,19 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_entries():
-    branches = app.engine.execute('select * from branches')
-    machines = app.engine.execute('select * from machines')
-    return render_template('show_entries.html', branches=branches, machines=machines)
+    branch_list = app.engine.execute('select * from branches')
+    machine_list = app.engine.execute('select * from machines')
+    return render_template('show_entries.html', branch_list=branch_list, machine_list=machine_list)
 
 @app.route('/branches', methods=['GET', 'POST'])
 def branches():
     # TODO - form validation
     if request.method == 'POST':
         if request.form['_method'] == "delete":
-            stmt = "delete from branches where id = %d" % int(request.form['id'])
-            results = app.con.execute(stmt)
+            results = app.con.execute(app.branches.delete().where(app.branches.c.id == request.form['id']))
             flash('Branch %s was successfully deleted' % request.form['branch_name'])
         elif request.form['_method'] == "insert":
-            stmt = "insert into branches(id, name) values (NULL, '%s')" % request.form['branch_name']
-            results = app.con.execute(stmt)
+            results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
             flash('New branch %s was successfully added' % request.form['branch_name'])
     if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)
@@ -49,14 +49,18 @@ def machines():
     # TODO - form validation
     if request.method == 'POST':
         if request.form['_method'] == "delete":
-            stmt = "delete from machines where id = %d" % int(request.form['id'])
-            results = app.con.execute(stmt)
+            results = app.con.execute(app.machines.delete().where(app.machines.c.id == request.form['id']))
             flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
         elif request.form['_method'] == "insert":
-            stmt = "insert into machines(id, os_id, is_throttling, cpu_speed, name, is_active, date_added) \
-                        values (NULL, %d, %d, %s, '%s', %d, %d)" % (int(request.form['os_id']), int(request.form['is_throttling']),
-                        request.form['cpu_speed'], request.form['machine_name'], int(request.form['is_active']), int(time.time()))
-            results = app.con.execute(stmt)
+            results = app.con.execute(
+                            app.machines.insert(), 
+                            os_id=int(request.form['os_id']),
+                            is_throttling=int(request.form['is_throttling']),
+                            cpu_speed=request.form['cpu_speed'], 
+                            name=request.form['machine_name'], 
+                            is_active=int(request.form['is_active']), 
+                            date_added=int(time.time())
+                        )
             flash('New machine %s was successfully added' % request.form['machine_name'])
     if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)

@@ -31,7 +31,7 @@
     <th>ID</th>
     <th colspan=4>NAME</th>
   </tr>
-  {% for branch in branches %}
+  {% for branch in branch_list %}
     <tr>
         <td colspan=3><form action="{{ url_for('branches') }}" method=post>
                         <input type="submit" value="delete" onClick=javascript:confirmDelete("{{ branch.name }}") />
@@ -56,7 +56,7 @@
     <th>IS_ACTIVE</th>
     <th>DATE_ADDED</th>
   </tr>
-  {% for machine in machines %}
+  {% for machine in machine_list %}
     <tr>
         <td>
             <form action="{{ url_for('machines') }}" method=post>
