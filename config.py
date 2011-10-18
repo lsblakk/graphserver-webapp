@@ -13,11 +13,10 @@ class TestConfig(object):
 class ProductionConfig(Config):
     DATABASE_URI = 'mysql://user@localhost/foo'
     VERSION = 'Production'
+    SECRET_KEY = 'FILLMEIN'
 
 class DevelopmentConfig(Config):
     DATABASE_URI = 'mysql://root:password@localhost/graphserver_staging'
     DEBUG = True
     SECRET_KEY = 'developmentkey'
-    USERNAME = 'admin'
-    PASSWORD = 'default'
     VERSION = 'Staging'

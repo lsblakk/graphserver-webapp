@@ -21,6 +21,13 @@ class GraphserverTestCase(unittest.TestCase):
         assert 'No machines' in rv.data
         assert 'No branches' in rv.data
 
+    def test_add_empty_branch_web(self):
+        rv = self.app.post('/branches', data=dict(
+            branch_name='',
+            _method='insert'
+        ), follow_redirects=True)
+        assert 'Please enter a branch name' in rv.data
+
     def test_add_branch_web(self):
         rv = self.app.post('/branches', data=dict(
             branch_name='new_branch_web',
@@ -36,6 +43,18 @@ class GraphserverTestCase(unittest.TestCase):
         rv = self.app.get('/')
         assert 'No branches' in rv.data
 
+    def test_delete_nonexistent_branch_json(self):
+        resp = self.app.get('/branches?format=json', follow_redirects=True)
+        results_pre = json.loads(resp.data)
+        rv = self.app.post('/branches', data=dict(
+            id=14,
+            format='json',
+            _method='delete'
+        ), follow_redirects=True)
+        resp = self.app.get('/branches?format=json', follow_redirects=True)
+        results_post = json.loads(resp.data)
+        assert results_pre == results_post
+
     def test_add_branch_json(self):
         rv = self.app.post('/branches', data=dict(
             branch_name='new_branch_json',
@@ -45,6 +64,18 @@ class GraphserverTestCase(unittest.TestCase):
         resp = self.app.get('/branches?format=json', follow_redirects=True)
         results = json.loads(resp.data)
         assert results['1'] == 'new_branch_json'
+
+    def test_add_empty_branch_json(self):
+        resp = self.app.get('/branches?format=json', follow_redirects=True)
+        results_pre = json.loads(resp.data)
+        rv = self.app.post('/branches', data=dict(
+            branch_name='',
+            format='json',
+            _method='insert'
+        ), follow_redirects=True)
+        resp = self.app.get('/branches?format=json', follow_redirects=True)
+        results_post = json.loads(resp.data)
+        assert results_pre == results_post
 
     def test_delete_branch_json(self):
         rv = self.app.post('/branches', data=dict(
@@ -56,9 +87,10 @@ class GraphserverTestCase(unittest.TestCase):
         results = json.loads(resp.data)
         assert results == {'2': 'new_branch_web'}
 
+
     def test_add_machine_json(self):
         rv = self.app.post('/machines', data=dict(
-            os_id='13',
+            os_id=13,
             is_throttling=1,
             cpu_speed=1.12,
             machine_name='new_machine_json',
@@ -70,6 +102,38 @@ class GraphserverTestCase(unittest.TestCase):
         results = json.loads(resp.data)
         assert results['1'] == 'new_machine_json'
 
+    def test_add_machine_with_blank_strings_json(self):
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_pre = json.loads(resp.data)
+        rv = self.app.post('/machines', data=dict(
+            os_id=12,
+            is_throttling=1,
+            cpu_speed=1.12,
+            machine_name='',
+            is_active=0,
+            format='json',
+            _method='insert'
+        ), follow_redirects=True)
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_post = json.loads(resp.data)
+        assert results_pre == results_post
+
+    def test_add_machine_with_non_numeric_json(self):
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_pre = json.loads(resp.data)
+        rv = self.app.post('/machines', data=dict(
+            os_id='OS',
+            is_throttling='s',
+            cpu_speed='',
+            machine_name='',
+            is_active='',
+            format='json',
+            _method='insert'
+        ), follow_redirects=True)
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_post = json.loads(resp.data)
+        assert results_pre == results_post
+
     def test_delete_machine_json(self):
         rv = self.app.post('/machines', data=dict(
             id=1,
@@ -79,6 +143,18 @@ class GraphserverTestCase(unittest.TestCase):
         resp = self.app.get('/machines?format=json', follow_redirects=True)
         results = json.loads(resp.data)
         assert results == {'2': 'new_machine_web'}
+
+    def test_delete_nonexistent_machine_json(self):
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_pre = json.loads(resp.data)
+        rv = self.app.post('/machines', data=dict(
+            id=14,
+            format='json',
+            _method='delete'
+        ), follow_redirects=True)
+        resp = self.app.get('/machines?format=json', follow_redirects=True)
+        results_post = json.loads(resp.data)
+        assert results_pre == results_post
 
     def test_add_machine_web(self):
         rv = self.app.post('/machines', data=dict(
