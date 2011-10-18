@@ -40,6 +40,8 @@ def branches():
         elif request.form['_method'] == "insert":
             results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
             flash('New branch %s was successfully added' % request.form['branch_name'])
+    if request.method == 'GET' and request.args.get('format') == 'json':
+        return jsonify(app.branches.select().execute().fetchall())
     if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)
     return redirect(url_for('show_entries'))
@@ -62,6 +64,12 @@ def machines():
                             date_added=int(time.time())
                         )
             flash('New machine %s was successfully added' % request.form['machine_name'])
+    if request.method == 'GET' and request.args.get('format') == 'json':
+        machines = {}
+        results = app.machines.select().execute().fetchall()
+        for r in results:
+            machines[r[0]] = r[4]
+        return jsonify(machines)
     if 'application/json' in request.headers.get('Accept', '') or request.form.get('format') == 'json':
         return jsonify(results)
     return redirect(url_for('show_entries'))
