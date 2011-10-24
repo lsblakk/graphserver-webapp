@@ -25,7 +25,3 @@ POST
         ** unique 'machine_name' (string)
         ** 'os_id', 'is_throttling', 'cpu_speed', 'is_active' (numeric)
         ** _method = 'insert'
-
-
-TODO:
-don't need to use session - can put the VERSION into the template

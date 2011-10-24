@@ -24,7 +24,6 @@ class GraphserverTestCase(unittest.TestCase):
     def test_add_empty_branch_web(self):
         rv = self.app.post('/branches', data=dict(
             branch_name='',
-            _method='insert'
         ), follow_redirects=True)
         assert 'Please enter a branch name' in rv.data
 
@@ -59,7 +58,6 @@ class GraphserverTestCase(unittest.TestCase):
         rv = self.app.post('/branches', data=dict(
             branch_name='new_branch_json',
             format='json',
-            _method='insert'
         ), follow_redirects=True)
         resp = self.app.get('/branches?format=json', follow_redirects=True)
         results = json.loads(resp.data)
@@ -71,7 +69,6 @@ class GraphserverTestCase(unittest.TestCase):
         rv = self.app.post('/branches', data=dict(
             branch_name='',
             format='json',
-            _method='insert'
         ), follow_redirects=True)
         resp = self.app.get('/branches?format=json', follow_redirects=True)
         results_post = json.loads(resp.data)
@@ -85,7 +82,7 @@ class GraphserverTestCase(unittest.TestCase):
         ), follow_redirects=True)
         resp = self.app.get('/branches?format=json', follow_redirects=True)
         results = json.loads(resp.data)
-        assert results == {'2': 'new_branch_web'}
+        assert results == {}
 
 
     def test_add_machine_json(self):
@@ -96,7 +93,6 @@ class GraphserverTestCase(unittest.TestCase):
             machine_name='new_machine_json',
             is_active=0,
             format='json',
-            _method='insert'
         ), follow_redirects=True)
         resp = self.app.get('/machines?format=json', follow_redirects=True)
         results = json.loads(resp.data)
@@ -112,7 +108,6 @@ class GraphserverTestCase(unittest.TestCase):
             machine_name='',
             is_active=0,
             format='json',
-            _method='insert'
         ), follow_redirects=True)
         resp = self.app.get('/machines?format=json', follow_redirects=True)
         results_post = json.loads(resp.data)
@@ -128,7 +123,6 @@ class GraphserverTestCase(unittest.TestCase):
             machine_name='',
             is_active='',
             format='json',
-            _method='insert'
         ), follow_redirects=True)
         resp = self.app.get('/machines?format=json', follow_redirects=True)
         results_post = json.loads(resp.data)
@@ -163,7 +157,6 @@ class GraphserverTestCase(unittest.TestCase):
             cpu_speed=1.12,
             machine_name='new_machine_web',
             is_active=0,
-            _method='insert'
         ), follow_redirects=True)
         assert 'new_machine_web' in rv.data
 

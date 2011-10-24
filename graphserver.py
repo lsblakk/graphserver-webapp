@@ -41,11 +41,12 @@ def show_entries():
 @app.route('/branches', methods=['GET', 'POST'])
 def branches():
     if request.method == 'POST':
-        if request.form['_method'] == "delete":
-            exists = app.con.execute(app.branches.select().where(app.branches.c.id == request.form['id']))
-            if exists.returns_rows:
-                results = app.con.execute(app.branches.delete().where(app.branches.c.id == request.form['id']))
-                flash('Branch %s was successfully deleted' % request.form['branch_name'])
+        if request.form.get('_method', False):
+            if request.form['_method'] == "delete":
+                exists = app.con.execute(app.branches.select().where(app.branches.c.id == request.form['id']))
+                if exists.returns_rows:
+                    results = app.con.execute(app.branches.delete().where(app.branches.c.id == request.form['id']))
+                    flash('Branch %s was successfully deleted' % request.form['branch_name'])
         else:
             exists = app.con.execute(app.branches.select().where(app.branches.c.name == request.form['branch_name']))
             if exists.fetchone() != None:
@@ -55,7 +56,6 @@ def branches():
             else:
                 results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
                 flash('New branch %s was successfully added' % request.form['branch_name'])
-# take this and the one for machines out into their own function for json? and then separate GET for each of these two
     if is_json():
         return jsonify(app.branches.select().execute().fetchall())
     return redirect(url_for('show_entries'))
@@ -63,11 +63,12 @@ def branches():
 @app.route('/machines', methods=['GET', 'POST'])
 def machines():
     if request.method == 'POST':
-        if request.form['_method'] == "delete":
-            exists = app.con.execute(app.machines.select().where(app.machines.c.id == request.form['id']))
-            if exists.returns_rows:
-                results = app.con.execute(app.machines.delete().where(app.machines.c.id == request.form['id']))
-                flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
+        if request.form.get('_method', False):
+            if request.form['_method'] == "delete":
+                exists = app.con.execute(app.machines.select().where(app.machines.c.id == request.form['id']))
+                if exists.returns_rows:
+                    results = app.con.execute(app.machines.delete().where(app.machines.c.id == request.form['id']))
+                    flash("Machine '%s' was successfully deleted" % request.form['machine_name'])
         else:
             errors = False
             for key,value in request.form.items():
