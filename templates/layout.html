@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Graphserver {{ session.version }}</title>
+<title>Graphserver {{ version }}</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <script>
 function confirmDelete(name,delUrl) {
@@ -9,7 +9,7 @@ function confirmDelete(name,delUrl) {
 }
 </script>
 <div class=page>
-  <h1>Graphserver {{ session.version }}</h1>
+  <h1>Graphserver {{ version }}</h1>
   {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
   {% endfor %}
