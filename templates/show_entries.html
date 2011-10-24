@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
-    <form action="{{ url_for('branches') }}" method=post class=add-branch>
+    <form action="{{ url_for('update_branches') }}" method=post class=add-branch>
       <dl>
         <dt>Branch Name:
         <dd><input type=text size=30 name=branch_name>
         <dd><input type=submit value="Submit">
       </dl>
     </form>
-    <form action="{{ url_for('machines') }}" method=post class=add-machine>
+    <form action="{{ url_for('update_machines') }}" method=post class=add-machine>
       <dl>
         <dt>Machine Name:
         <dd><input type=text size=10 name=machine_name>
@@ -31,7 +31,7 @@
   </tr>
   {% for branch in branch_list %}
     <tr>
-        <td colspan=3><form action="{{ url_for('branches') }}" method=post>
+        <td colspan=3><form action="{{ url_for('update_branches') }}" method=post>
                         <input type="submit" value="delete" onClick=javascript:confirmDelete("{{ branch.name }}") />
                         <input type="hidden" name="id"  value={{ branch.id }} />
                         <input type="hidden" name="branch_name" value={{ branch.name }} />
@@ -57,7 +57,7 @@
   {% for machine in machine_list %}
     <tr>
         <td>
-            <form action="{{ url_for('machines') }}" method=post>
+            <form action="{{ url_for('update_machines') }}" method=post>
                 <input type="hidden" name="_method" value="delete">
                 <input type="hidden" value={{ machine.name }} name="machine_name" />
                 <input type="hidden" value={{ machine.id }} name="id" />
