@@ -41,8 +41,7 @@ def show_entries():
 @app.route('/branches', methods=['GET', 'POST'])
 def branches():
     if request.method == 'POST':
-        if request.form.get('_method', False):
-            if request.form['_method'] == "delete":
+        if request.form.get('_method') == "delete":
                 exists = app.con.execute(app.branches.select().where(app.branches.c.id == request.form['id']))
                 if exists.returns_rows:
                     results = app.con.execute(app.branches.delete().where(app.branches.c.id == request.form['id']))
@@ -63,8 +62,7 @@ def branches():
 @app.route('/machines', methods=['GET', 'POST'])
 def machines():
     if request.method == 'POST':
-        if request.form.get('_method', False):
-            if request.form['_method'] == "delete":
+        if request.form.get('_method') == "delete":
                 exists = app.con.execute(app.machines.select().where(app.machines.c.id == request.form['id']))
                 if exists.returns_rows:
                     results = app.con.execute(app.machines.delete().where(app.machines.c.id == request.form['id']))

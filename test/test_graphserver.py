@@ -82,7 +82,7 @@ class GraphserverTestCase(unittest.TestCase):
         ), follow_redirects=True)
         resp = self.app.get('/branches?format=json', follow_redirects=True)
         results = json.loads(resp.data)
-        assert results == {}
+        assert results == {'2': 'new_branch_web'}
 
 
     def test_add_machine_json(self):
