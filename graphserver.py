@@ -4,9 +4,16 @@ from flask import Flask, request, redirect, url_for, jsonify
 from flask import abort, render_template, flash
 from contextlib import closing
 from sqlalchemy import create_engine, MetaData, Table
+import logging, logging.handlers
 
 app = Flask(__name__)
 app.config.from_object('config.DevelopmentConfig')
+
+#### LOGGING
+format = logging.Formatter(fmt="%(asctime)s-%(levelname)s-%(funcName)s: %(message)s")
+handler = logging.handlers.RotatingFileHandler(app.config['LOGFILE'], maxBytes=50000, backupCount=5)
+handler.setFormatter(format)
+app.logger.addHandler(handler)
 
 def init_db():
     app.engine = create_engine(app.config['DATABASE_URI'], convert_unicode=True)
@@ -45,12 +52,15 @@ def update_branches():
     else:   
         exists = app.con.execute(app.branches.select().where(app.branches.c.name == request.form['branch_name']))
         if exists.fetchone() != None:
-            flash('Branch name exists, please enter a unique name')
+            flash('Branch name "%s" exists, please enter a unique name' % request.form['branch_name'])
+            app.logger.warning('Branch name "%s" exists, please enter a unique name', request.form['branch_name'])
         elif request.form['branch_name'] == '':
-            flash('Please enter a branch name')
+            flash('Branch name cannot be blank')
+            app.logger.warning('Branch name cannot be blank')
         else:
             results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
-            flash('New branch %s was successfully added' % request.form['branch_name'])
+            flash('New branch "%s" was successfully added' % request.form['branch_name'])
+            app.logger.info('New branch "%s" was successfully added' % request.form['branch_name'])
 
     if is_json():
         return jsonify(app.branches.select().execute().fetchall())
@@ -61,7 +71,8 @@ def delete_branch(id, branch_name):
     exists = app.con.execute(app.branches.select().where(app.branches.c.id == id))
     if exists.returns_rows:
         results = app.con.execute(app.branches.delete().where(app.branches.c.id == id))
-        flash('Branch %s was successfully deleted' % branch_name)
+        flash('Branch "%s" was successfully deleted' % branch_name)
+        app.logger.info('Branch "%s" was successfully deleted' % branch_name)
 
 @app.route('/branches', methods=['GET'])
 def get_branches():
@@ -79,16 +90,19 @@ def update_machines():
             if key == 'machine_name':
                 exists = app.con.execute(app.machines.select().where(app.machines.c.name == request.form['machine_name']))
                 if exists.fetchone() != None:
-                    flash('Machine name exists, please enter a unique name')
+                    flash('Machine name "%s" exists, please enter a unique name' % request.form['machine_name'])
+                    app.logger.warning('Machine name "%s" exists, please enter a unique name', request.form['machine_name'])
                     errors = True
                 elif value == '':
-                    flash('Please provide a machine name')
+                    flash('Machine name cannot be blank')
+                    app.logger.warning('Machine name cannot be blank')
                     errors = True
             elif key in ('os_id', 'is_throttling', 'cpu_speed', 'is_active'):
                 try:
                     i = float(value)
                 except ValueError, TypeError:
-                    flash('%s must have a numeric value' % key)
+                    flash('"%s" must be a numeric value' % key)
+                    app.logger.warning('"%s" must be a numeric value' % key)
                     errors = True
         if not errors:
             results = app.con.execute(
@@ -100,7 +114,8 @@ def update_machines():
                         is_active=int(request.form['is_active']), 
                         date_added=int(time.time())
                     )
-            flash('New machine %s was successfully added' % request.form['machine_name'])
+            flash('New machine "%s" was successfully added' % request.form['machine_name'])
+            app.logger.info('New machine "%s" was successfully added' % request.form['machine_name'])
     if is_json():
         machines = {}
         results = app.machines.select().execute().fetchall()
@@ -114,7 +129,8 @@ def delete_machine(id, machine_name):
     exists = app.con.execute(app.machines.select().where(app.machines.c.id == id))
     if exists.returns_rows:
         results = app.con.execute(app.machines.delete().where(app.machines.c.id == id))
-        flash("Machine '%s' was successfully deleted" % machine_name)
+        flash('Machine "%s" was successfully deleted' % machine_name)
+        app.logger.info('Machine "%s" was successfully deleted' % machine_name)
 
 @app.route('/machines', methods=['GET'])
 def get_machines():

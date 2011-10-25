@@ -20,7 +20,7 @@ class GraphserverTestCase(unittest.TestCase):
         rv = self.app.post('/branches', data=dict(
             branch_name='',
         ), follow_redirects=True)
-        assert 'Please enter a branch name' in rv.data
+        assert 'cannot be blank' in rv.data
 
     def test_add_branch(self):
         rv = self.app.post('/branches', data=dict(

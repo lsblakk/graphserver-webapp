@@ -14,14 +14,18 @@ adding ?format=json to the GET urls will provide json of the id/name for a branc
 POST
 
 /branches
-
-    * accepts 'id' for a branch and _method = 'delete' and removes that branch from db if exists
+    * accepts 'id' and 'branch_name' for a branch and _method = 'delete' and removes that branch from db if exists
     * accepts a unique 'branch_name' and _method = 'insert' and adds that branch name to the db
-
 /machines
-
-    * accepts 'id' for a machine and _method = 'delete' and removes that machine from db if exists
+    * accepts 'id' and 'machine_name' for a machine and _method = 'delete' and removes that machine from db if exists
     * accepts the following to add a machine to the db:
         ** unique 'machine_name' (string)
         ** 'os_id', 'is_throttling', 'cpu_speed', 'is_active' (numeric)
         ** _method = 'insert'
+
+DELETE
+
+/branches
+    * accepts 'id' and 'branch_name' for a branch and removes that branch from db if exists
+/machines
+    * accepts 'id' and 'machine_name' for a machine and removes that machine from db if exists

@@ -41,7 +41,7 @@
         <td colspan=4>{{ branch.name }}</td>
     </tr>
   {% else %}
-    <tr colspan=7><td><em>No branches here so far</em></td></tr>
+    <tr><td colspan=8><em>No branches here so far</em></td></tr>
   {% endfor %}
   <th colspan=8>Machines</th>
   <tr>
@@ -73,7 +73,7 @@
         <td>{{ machine.date_added }}</td>
     </tr>
   {% else %}
-    <tr colspan=7><td><em>No machines here so far</td></tr>
+    <tr><td colspan=8><em>No machines here so far</td></tr>
   {% endfor %}
   </table>
 {% endblock %}
