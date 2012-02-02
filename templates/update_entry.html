@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if branch_id %}
+    <form action="{{ url_for('update_branch') }}" method=post>
+      <dl>
+        <dt>Branch Name:
+        <dd><input type=text size=30 name=branch_name value='{{ branch_name }}'><input type="hidden" name="branch_id" value={{ branch_id }}>
+        <dd><input type=submit value="Submit">
+      </dl>
+    </form>
+  {% elif machine_id %}
+    <form action="{{ url_for('update_machines') }}" method=post>
+      <dl>
+        <dt>Machine Name:
+        <dd><input type=text size=10 name=machine_name value='{{ machine_name }}'>
+        <dt>OS_ID:
+        <dd><input type=text size=2 name=os_id value={{ os_id }}>
+        <dt>is_throttling:
+        <dd><input type=text size=1 name=is_throttling value={{ is_throttling }}>
+        <dt>cpu_speed:
+        <dd><input type=text size=4 name=cpu_speed value={{ cpu_speed }}>
+        <dt>is_active:
+        <dd><input type=text size=2 name=is_active value={{ is_active }}>
+        <input type="hidden" name="machine_id" value={{ machine_id }}>
+        <dd><input type=submit value="Submit">
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}

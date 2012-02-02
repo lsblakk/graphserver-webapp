@@ -45,34 +45,32 @@ def show_entries():
     return render_template('show_entries.html', branch_list=branch_list, 
                             machine_list=machine_list, version=version)
 
-@app.route('/branches', methods=['POST'])
-def update_branches():
-    if request.form.get('_method') == "delete":
-        delete_branch(request.form['id'], request.form['branch_name'])
-    else:   
-        exists = app.con.execute(app.branches.select().where(app.branches.c.name == request.form['branch_name']))
+@app.route('/branch', methods=['POST'])
+def update_branch():
+    if request.form.get('branch_id'):
+        exists = app.con.execute(app.branches.select().where(app.branches.c.id == request.form['branch_id']))
         if exists.fetchone() != None:
-            flash('Branch name "%s" exists, please enter a unique name' % request.form['branch_name'])
-            app.logger.warning('Branch name "%s" exists, please enter a unique name', request.form['branch_name'])
-        elif request.form['branch_name'] == '':
-            flash('Branch name cannot be blank')
-            app.logger.warning('Branch name cannot be blank')
-        else:
-            results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
-            flash('New branch "%s" was successfully added' % request.form['branch_name'])
-            app.logger.info('New branch "%s" was successfully added' % request.form['branch_name'])
-
+            # This branch exists, update the info
+            print "Branch exists"
+            branch_name, id = request.form.listvalues()
+            results = app.con.execute(app.branches.update().where(app.branches.c.id==int(id[0])).values(name=branch_name[0]))
+            flash('Branch %s updated' % request.form['branch_id'])
+            app.logger.info('Branch %s updated' % request.form['branch_id'])
+    else:
+        # New branch to be inserted
+        print "New branch to be inserted"
+        results = app.con.execute(app.branches.insert(), name=request.form['branch_name'])
+        flash('New branch "%s" was successfully added' % request.form['branch_name'])
+        app.logger.info('New branch "%s" was successfully added' % request.form['branch_name'])
+    
     if is_json():
         return jsonify(app.branches.select().execute().fetchall())
     return redirect(url_for('show_entries'))
 
-@app.route('/branches', methods=['DELETE'])
-def delete_branch(id, branch_name):
-    exists = app.con.execute(app.branches.select().where(app.branches.c.id == id))
-    if exists.returns_rows:
-        results = app.con.execute(app.branches.delete().where(app.branches.c.id == id))
-        flash('Branch "%s" was successfully deleted' % branch_name)
-        app.logger.info('Branch "%s" was successfully deleted' % branch_name)
+@app.route('/branch/<branch_id>?<branch_name>', methods=['POST'])
+def edit_branch(branch_id, branch_name):
+    print branch_name
+    return render_template('update_entry.html', branch_id=branch_id, branch_name=branch_name)
 
 @app.route('/branches', methods=['GET'])
 def get_branches():
@@ -80,12 +78,29 @@ def get_branches():
         return jsonify(app.branches.select().execute().fetchall())
     return redirect(url_for('show_entries'))
 
+@app.route('/machines/<machine_id>?<machine_name>?<os_id>?<is_throttling>?<is_active>', methods=['POST'])
+def edit_machine(machine_id, machine_name, os_id, is_throttling, is_active):
+    print machine_name
+    return render_template('update_entry.html', machine_id=machine_id, machine_name=machine_name, os_id=os_id, is_throttling=is_throttling, is_active=is_active)
+
 @app.route('/machines', methods=['POST'])
 def update_machines():
-    if request.form.get('_method') == "delete":
-        delete_machine(request.form['id'], request.form['machine_name'])
-    else:
+    if request.form.get('machine_id'):
+        exists = app.con.execute(app.machines.select().where(app.machines.c.id == request.form['machine_id']))
         errors = False
+        if exists.fetchone() != None:
+            print "Machine exists"
+            print request.form.items()
+            results = app.con.execute(
+                app.machines.update().where(app.machines.c.id==int(request.form.get('machine_id'))).values(
+                name=request.form.get('machine_name'),
+                os_id=int(request.form.get('os_id')),
+                is_throttling=int(request.form.get('is_throttling')),
+                is_active=int(request.form.get('is_active')),
+            ))
+            flash('Machine %s updated' % request.form['machine_id'])
+            app.logger.info('Machine %s updated' % request.form['machine_id'])
+    else:
         for key,value in request.form.items():
             if key == 'machine_name':
                 exists = app.con.execute(app.machines.select().where(app.machines.c.name == request.form['machine_name']))
@@ -123,14 +138,6 @@ def update_machines():
             machines[r[0]] = r[4]
         return jsonify(machines)
     return redirect(url_for('show_entries'))  
-
-@app.route('/machines', methods=['DELETE'])
-def delete_machine(id, machine_name):
-    exists = app.con.execute(app.machines.select().where(app.machines.c.id == id))
-    if exists.returns_rows:
-        results = app.con.execute(app.machines.delete().where(app.machines.c.id == id))
-        flash('Machine "%s" was successfully deleted' % machine_name)
-        app.logger.info('Machine "%s" was successfully deleted' % machine_name)
 
 @app.route('/machines', methods=['GET'])
 def get_machines():
