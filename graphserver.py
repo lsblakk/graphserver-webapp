@@ -69,6 +69,7 @@ def update_branch():
     
     return redirect(url_for('show_entries'))
 
+# only for webapp view - to allow for an editing form for existing branch
 @app.route('/branch/<branch_id>&branch_name=<branch_name>', methods=['GET'])
 def edit_branch(branch_id, branch_name):
     return render_template('update_entry.html', branch_id=branch_id, branch_name=branch_name)
@@ -79,6 +80,7 @@ def get_branches():
         return jsonify(app.branches.select().execute().fetchall())
     return redirect(url_for('show_entries'))
 
+# only for webapp view - to allow for an editing form for existing machine
 @app.route('/machines/<machine_id>', methods=['POST'])
 def edit_machine(machine_id):
     return render_template('update_entry.html', machine_id=machine_id,
