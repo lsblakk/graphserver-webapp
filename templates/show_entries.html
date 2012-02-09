@@ -31,7 +31,7 @@
   </tr>
   {% for branch in branch_list %}
     <tr>
-        <td colspan=3><form action="{{ url_for('edit_branch', branch_id=branch.id, branch_name=branch.name) }}" method=post>
+        <td colspan=3><form action="{{ url_for('edit_branch', branch_id=branch.id, branch_name=branch.name) }}" method=get>
                         <input type="submit" value="edit"  />
                       </form></td>
         <td>{{ branch.id }}</td>
@@ -54,7 +54,12 @@
   {% for machine in machine_list %}
     <tr>
         <td>
-            <form action="{{ url_for('edit_machine', machine_id=machine.id, machine_name=machine.name, os_id=machine.os_id, is_throttling=machine.is_throttling, is_active=machine.is_active) }}" method=POST>
+            <form action="{{ url_for('edit_machine', machine_id=machine.id) }}" method=post>
+                <input type="hidden" name="os_id" value={{ machine.os_id }} />
+                <input type="hidden" name="is_throttling" value={{ machine.is_throttling }} />
+                <input type="hidden" name="cpu_speed" value={{ machine.cpu_speed}} />
+                <input type="hidden" name="name" value={{ machine.name }} />
+                <input type="hidden" name="is_active" value={{ machine.is_active }} />
                 <input type="submit" value="edit" />
             </form>
         </td>

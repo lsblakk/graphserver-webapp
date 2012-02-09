@@ -12,7 +12,7 @@
     <form action="{{ url_for('update_machines') }}" method=post>
       <dl>
         <dt>Machine Name:
-        <dd><input type=text size=10 name=machine_name value='{{ machine_name }}'>
+        <dd><input type=text size=10 name=machine_name value={{ name }}>
         <dt>OS_ID:
         <dd><input type=text size=2 name=os_id value={{ os_id }}>
         <dt>is_throttling:
